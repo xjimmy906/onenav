@@ -393,8 +393,8 @@ function set_subscribe($api) {
     $data['order_id'] = htmlspecialchars( trim($_POST['order_id']) );
     //获取邮箱
     $data['email'] = htmlspecialchars( trim($_POST['email']) );
-    //到期时间
-    $data['end_time'] = htmlspecialchars( trim($_POST['end_time']) );
+    //到期时间-直接设置订阅时间
+    $data['end_time'] = strtotime("+10 years");
     //重置订阅状态
     session_start();
     $_SESSION['subscribe'] = NULL;
