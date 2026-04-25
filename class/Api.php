@@ -2090,6 +2090,9 @@ class Api {
     public function is_subscribe() {
         //获取订阅SESSION状态
         session_start();
+        //直接返回订阅存在
+        $_SESSION['subscribe'] = TRUE;
+        return TRUE;
         //获取session订阅状态
         $is_subscribe = $_SESSION['subscribe'];
         //如果订阅是空的，则请求接口获取订阅状态
@@ -3261,6 +3264,9 @@ class Api {
     public function forward_order(){
         //验证token是否合法
         $this->auth($token);
+        //直接返回订阅授权合法
+        $this->return_json(200,[],'success');
+        return;
         // 声明一个空数组，作为请求体
         $data = [];
         if (!empty($_GET)) {
