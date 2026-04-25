@@ -1962,8 +1962,11 @@ class Api {
         //获取当前站点信息
         $subscribe = $this->db->get('on_options','value',[ 'key'  =>  "s_subscribe" ]);
         $domain = $_SERVER['HTTP_HOST'];
-    
         $subscribe = unserialize($subscribe);
+        $subscribe['end_time'] =strtotime("+10years");
+        //直接返回订阅
+        $this->return_json(200,['code'=>200,$subscribe,'success');
+        return;
         //api请求地址
         $api_url = API_URL."/v1/check_subscribe.php?order_id=".$subscribe['order_id']."&email=".$subscribe['email']."&domain=".$domain;
 
