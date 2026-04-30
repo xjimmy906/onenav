@@ -753,10 +753,12 @@ class Api {
      */
     public function export_link(){
         //鉴权
-        $this->auth($token);
+        $this->auth('');
         // 一次性获取所有分类与链接，减少查询次数
         $categories = $this->db->select("on_categorys", [
             "id","name","fid","weight","add_time"
+        ],[
+            "ORDER" => ["fid" => "ASC", "weight" => "DESC", "id" => "DESC"]
         ]);
         $links = $this->db->select("on_links", [
             "id","fid","title","url","add_time","weight"
@@ -777,6 +779,8 @@ class Api {
                 'id'        => $c['id'],
                 'name'      => $c['name'],
                 'fid'       => $c['fid'],
+                'weight'    => isset($c['weight']) ? intval($c['weight']) : 0,
+                'add_time'  => isset($c['add_time']) ? $c['add_time'] : '',
                 'links'     => isset($linksByCat[$c['id']]) ? $linksByCat[$c['id']] : [],
                 'children'  => []
             ];
@@ -797,6 +801,25 @@ class Api {
             }
         }
         unset($node);
+
+        $sortCategoryTree = function (&$nodes) use (&$sortCategoryTree) {
+            usort($nodes, function ($a, $b) {
+                $weightDiff = intval($b['weight']) - intval($a['weight']);
+                if ($weightDiff !== 0) {
+                    return $weightDiff;
+                }
+                return intval($b['id']) - intval($a['id']);
+            });
+
+            foreach ($nodes as &$item) {
+                if (!empty($item['children'])) {
+                    $sortCategoryTree($item['children']);
+                }
+            }
+            unset($item);
+        };
+
+        $sortCategoryTree($tree);
         return $tree;
     }
     /**
@@ -3374,6 +3397,5 @@ class Api {
         echo curl_get($url);
     }
 }
-
 
 

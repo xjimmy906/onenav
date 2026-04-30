@@ -584,10 +584,10 @@ function export_link($api) {
 
 HTML;
 
-    // 构造根目录“书签栏”包裹所有顶级分类
+    // 构造浏览器兼容的根目录，名称使用 Bookmarks 以兼容导入器忽略系统根目录的逻辑
     $rootAdd  = $now;
     $rootMod  = $now;
-    echo "    <DT><H3 ADD_DATE=\"{$rootAdd}\" LAST_MODIFIED=\"{$rootMod}\" PERSONAL_TOOLBAR_FOLDER=\"true\">OneNav</H3>\n";
+    echo "    <DT><H3 ADD_DATE=\"{$rootAdd}\" LAST_MODIFIED=\"{$rootMod}\" PERSONAL_TOOLBAR_FOLDER=\"true\">Bookmarks</H3>\n";
     echo "    <DL><p>\n";
 
     foreach ($tree as $topCat) {

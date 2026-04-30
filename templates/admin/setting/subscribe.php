@@ -5,6 +5,11 @@
 <div class="layui-body">
 <!-- 内容主体区域 -->
 <div class="layui-row content-body place-holder" style="padding-bottom: 3em;">
+    <div class="layui-col-lg12">
+      <blockquote class="layui-elem-quote" style="border-left-color: #ff5722; background-color: #fff4e8; color: #8a4b08; font-size: 15px; line-height: 1.8; margin-bottom: 15px;">
+        <strong>OneNav重构版ZMark现已发布，</strong><a href="https://dwz.ovh/amr6" target="_blank" rel="noopener noreferrer" style="color: #ff5722; font-weight: bold; text-decoration: underline;">点此了解如何升级</a>。
+      </blockquote>
+    </div>
     <!-- 说明提示框 -->
     <div class="layui-col-lg12">
       <div class="setting-msg">
