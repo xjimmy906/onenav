@@ -1093,7 +1093,7 @@ class Api {
      * 查询链接
      * 接收一个数组作为参数
      */
-    公共 function link_list($data){
+    function link_list($data){
         $limit = $data['limit'];
         $token = $data['token'];
         $offset = ($data['page'] - 1) * $data['limit'];
