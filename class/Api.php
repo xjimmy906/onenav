@@ -751,7 +751,7 @@ class Api {
      *   ...
      * ]
      */
-    公共 function export_link(){
+    function export_link(){
         //鉴权
         $this->auth('');
         // 一次性获取所有分类与链接，减少查询次数
