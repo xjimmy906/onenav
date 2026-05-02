@@ -751,7 +751,7 @@ class Api {
      *   ...
      * ]
      */
-    function export_link(){
+    public function export_link(){
         //鉴权
         $this->auth('');
         // 一次性获取所有分类与链接，减少查询次数
@@ -1093,7 +1093,7 @@ class Api {
      * 查询链接
      * 接收一个数组作为参数
      */
-    function link_list($data){
+    public function link_list($data){
         $limit = $data['limit'];
         $token = $data['token'];
         $offset = ($data['page'] - 1) * $data['limit'];
@@ -1325,7 +1325,7 @@ class Api {
 
         // 初始化返回数据结构，确保即使获取失败也有完整的字段
         $link = [
-            'title'       => ''，
+            'title'       => '',
             'description' => ''
         ];
 
@@ -1520,7 +1520,7 @@ class Api {
     /**
      * name:检查弱密码
      */
-    公共 function check_weak_password($token){
+    public function check_weak_password($token){
         $this->auth($token);
         //如果用户名、密码为初始密码，则提示修改
         if ( ( USER == 'xiaoz' ) && ( PASSWORD == 'xiaoz.me' ) ) {
@@ -1669,7 +1669,7 @@ class Api {
     /**
      * 保存主题参数
      */
-    公共 function save_theme_config($data) {
+    public function save_theme_config($data) {
         $this->auth($token);
         //获取主题名称
         $name = $data['name'];
@@ -1978,7 +1978,7 @@ class Api {
     /**
      * 验证订阅是否有效
      */
-    公共 function check_subscribe() {
+    public function check_subscribe() {
         //验证token是否合法
         $this->auth($token);
         //获取订阅信息
@@ -3397,5 +3397,3 @@ class Api {
         echo curl_get($url);
     }
 }
-
-
