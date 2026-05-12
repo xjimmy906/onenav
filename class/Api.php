@@ -822,6 +822,158 @@ class Api {
         $sortCategoryTree($tree);
         return $tree;
     }
+
+    /**
+     * 导出JSON链接数据，格式兼容ZMark导入
+     */
+    public function export_json(){
+        //鉴权
+        $this->auth('');
+
+        $categories = $this->db->select("on_categorys", [
+            "id","name","fid","description","weight","add_time"
+        ],[
+            "ORDER" => ["fid" => "ASC", "weight" => "DESC", "id" => "DESC"]
+        ]);
+        $links = $this->db->select("on_links", [
+            "id","fid","title","url","description","url_standby","weight","add_time"
+        ],[
+            "ORDER" => ["weight" => "DESC", "id" => "DESC"]
+        ]);
+
+        $decodeText = function ($value) {
+            return html_entity_decode((string)(isset($value) ? $value : ''), ENT_QUOTES, 'UTF-8');
+        };
+
+        $toExportLink = function ($link) use ($decodeText) {
+            return [
+                'title'       =>  $decodeText($link['title']),
+                'url'         =>  (string)(isset($link['url']) ? $link['url'] : ''),
+                'description' =>  $decodeText($link['description']),
+                'backup_url'  =>  (string)(isset($link['url_standby']) ? $link['url_standby'] : ''),
+                'sort_order'  =>  intval(isset($link['weight']) ? $link['weight'] : 0)
+            ];
+        };
+
+        $createDefaultCategory = function () {
+            return [
+                'name'        =>  '默认分类',
+                'description' =>  '',
+                'links'       =>  [],
+                'children'    =>  []
+            ];
+        };
+
+        $categoryMap = [];
+        $topCategoryIds = [];
+        $defaultCategory = null;
+
+        foreach ($categories as $category) {
+            $categoryMap[$category['id']] = [
+                'id'          =>  $category['id'],
+                'fid'         =>  $category['fid'],
+                'weight'      =>  intval(isset($category['weight']) ? $category['weight'] : 0),
+                'name'        =>  $decodeText($category['name']),
+                'description' =>  $decodeText($category['description']),
+                'links'       =>  [],
+                'children'    =>  []
+            ];
+        }
+
+        foreach ($categoryMap as $id => &$category) {
+            if (intval($category['fid']) === 0) {
+                $topCategoryIds[] = $id;
+                continue;
+            }
+
+            if (isset($categoryMap[$category['fid']])) {
+                $categoryMap[$category['fid']]['children'][] = &$category;
+                continue;
+            }
+
+            if ($defaultCategory === null) {
+                $defaultCategory = $createDefaultCategory();
+            }
+            $defaultCategory['children'][] = &$category;
+        }
+        unset($category);
+
+        foreach ($links as $link) {
+            $fid = intval($link['fid']);
+            $exportLink = $toExportLink($link);
+
+            if (isset($categoryMap[$fid])) {
+                $categoryMap[$fid]['links'][] = $exportLink;
+                continue;
+            }
+
+            if ($defaultCategory === null) {
+                $defaultCategory = $createDefaultCategory();
+            }
+            $defaultCategory['links'][] = $exportLink;
+        }
+
+        $sortCategories = function (&$items) use (&$sortCategories) {
+            usort($items, function ($a, $b) {
+                $weightDiff = intval(isset($b['weight']) ? $b['weight'] : 0) - intval(isset($a['weight']) ? $a['weight'] : 0);
+                if ($weightDiff !== 0) {
+                    return $weightDiff;
+                }
+                return intval(isset($b['id']) ? $b['id'] : 0) - intval(isset($a['id']) ? $a['id'] : 0);
+            });
+
+            foreach ($items as &$item) {
+                if (!empty($item['children'])) {
+                    $sortCategories($item['children']);
+                }
+            }
+            unset($item);
+        };
+
+        $topCategories = [];
+        foreach ($topCategoryIds as $id) {
+            $topCategories[] = $categoryMap[$id];
+        }
+        $sortCategories($topCategories);
+
+        $stripL2Category = function ($category) {
+            return [
+                'name'        =>  $category['name'],
+                'description' =>  $category['description'],
+                'links'       =>  $category['links']
+            ];
+        };
+
+        $stripL1Category = function ($category) use ($stripL2Category) {
+            $children = [];
+            foreach ($category['children'] as $child) {
+                $children[] = $stripL2Category($child);
+            }
+
+            return [
+                'name'        =>  $category['name'],
+                'description' =>  $category['description'],
+                'links'       =>  $category['links'],
+                'children'    =>  $children
+            ];
+        };
+
+        $exportCategories = [];
+        foreach ($topCategories as $category) {
+            $exportCategories[] = $stripL1Category($category);
+        }
+
+        if ($defaultCategory !== null) {
+            $sortCategories($defaultCategory['children']);
+            $exportCategories[] = $stripL1Category($defaultCategory);
+        }
+
+        return [
+            'type'       =>  'onenav.bookmarks',
+            'version'    =>  1,
+            'categories' =>  $exportCategories
+        ];
+    }
     /**
      * name:修改链接
      */

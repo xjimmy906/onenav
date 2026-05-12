@@ -598,6 +598,22 @@ HTML;
     echo "</DL><p>\n";
 }
 
+//导出JSON链接数据
+function export_json($api) {
+    header('Content-Type: application/json; charset=UTF-8');
+
+    $payload = [];
+    if (method_exists($api,'export_json')) {
+        $payload = $api->export_json();
+    }
+
+    if (!is_array($payload)) { $payload = []; }
+
+    $fileName = 'OneNav_Export_' . date('Ymd') . '.json';
+    header('Content-Disposition: attachment; filename="' . $fileName . '"');
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . "\n";
+}
+
 // 批量设置链接私有属性
 function set_link_attribute($api) {
     $ids = $_POST['ids'];

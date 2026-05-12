@@ -1189,6 +1189,30 @@ function export_link(url, fileName) {
   
 }
 
+//导出JSON链接数据
+function export_json(url, fileName) {
+  layer.confirm('导出的JSON数据支持导入到ZMark中，请妥善保存导出的文件。', {icon: 3, title:'确定导出JSON？'}, function(index){
+    var date = new Date();
+    var current_time = date.toLocaleDateString();
+    current_time = current_time.replaceAll("/",".");
+    var url = "index.php?c=api&method=export_json";
+    var fileName = "OneNav_Export_" + current_time + ".json";
+    var x = new XMLHttpRequest();
+    x.open("GET", url, true);
+    x.responseType = 'blob';
+    x.onload=function(e) {
+        var url = window.URL.createObjectURL(x.response)
+        var a = document.createElement('a');
+        a.href = url
+        a.download = fileName;
+        a.click()
+    }
+    x.send();
+
+    layer.close(index);
+  });
+}
+
 //删除主题
 function delete_theme(name) {
   layer.confirm('确认删除此主题(' + name + ')?', {icon: 3, title:'重要提示'}, function(index){

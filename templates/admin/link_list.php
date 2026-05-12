@@ -92,7 +92,8 @@
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" onclick = "">删除</a>
     </script>
     <!-- 表单下面的按钮 -->
-    <button style="margin-top:16px;" class="layui-btn layui-btn-sm" lay-submit onclick = "export_link()">导出所有链接</button>
+    <button style="margin-top:16px;" class="layui-btn layui-btn-sm" lay-submit onclick = "export_link()">导出HTML</button>
+    <button style="margin-top:16px;" class="layui-btn layui-btn-sm layui-btn-normal" lay-submit onclick = "export_json()">导出JSON</button>
     <!-- 表单下面的按钮END -->
 </div>
 <!-- 内容主题区域END -->
